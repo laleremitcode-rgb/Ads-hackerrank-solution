@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+int main() {
+    long long L, R;
+    scanf("%lld", &L);
+    scanf("%lld", &R);
+
+    long long curr = L;
+    int levels[1000];   // store the sequence of levels
+    int idx = 0;
+
+    while (curr <= R) {
+        int level = 0;
+        long long len = 1;
+
+        // Find the largest segment starting at curr that fits in [curr, R]
+        while ((curr % (len * 10) == 1 || curr % (len * 10) == 0) && curr + len * 10 - 1 <= R) {
+            len *= 10;
+            level++;
+        }
+
+        levels[idx++] = level; // lowest level is 1, so no +1 here
+        curr += len;
+    }
+
+    // Compress consecutive same levels
+    int compressedLevels[1000], counts[1000];
+    int compIdx = 0;
+    for (int i = 0; i < idx; i++) {
+        if (i == 0 || levels[i] != compressedLevels[compIdx - 1]) {
+            compressedLevels[compIdx] = levels[i];
+            counts[compIdx] = 1;
+            compIdx++;
+        } else {
+            counts[compIdx - 1]++;
+        }
+    }
+
+    // Print output
+    printf("%d\n", compIdx);
+    for (int i = 0; i < compIdx; i++) {
+        printf("%d %d\n", compressedLevels[i], counts[i]);
+    }
+
+    return 0;
+}
