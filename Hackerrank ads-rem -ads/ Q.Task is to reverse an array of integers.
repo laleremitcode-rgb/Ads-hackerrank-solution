@@ -1,4 +1,4 @@
- Q.Task is to reverse an array of integers.
+
 #include <stdio.h>
 int main() {
     int n;
@@ -17,3 +17,4 @@ int main() {
 
     return 0;
 }
+
