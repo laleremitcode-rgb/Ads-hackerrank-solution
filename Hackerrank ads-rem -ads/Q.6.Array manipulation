@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    long n, m;
+    scanf("%ld %ld", &n, &m);
+
+    long *arr = (long *)calloc(n + 1, sizeof(long)); // difference array (size n+1)
+
+    for (long i = 0; i < m; i++) {
+        long a, b, k;
+        scanf("%ld %ld %ld", &a, &b, &k);
+
+        arr[a - 1] += k;  // add k starting from index a-1
+        if (b < n) arr[b] -= k; // subtract k after index b
+    }
+
+    long max = 0, current = 0;
+    for (long i = 0; i < n; i++) {
+        current += arr[i];  // prefix sum builds actual array
+        if (current > max)
+            max = current;
+    }
+
+    printf("%ld\n", max);
+
+    free(arr);
+    return 0;
+}
