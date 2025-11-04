@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int maxEqualHeight(int* h1, int n1, int* h2, int n2, int* h3, int n3) {
+    // Create arrays to store cumulative sums from bottom
+    int *sum1 = (int*)malloc((n1+1)*sizeof(int));
+    int *sum2 = (int*)malloc((n2+1)*sizeof(int));
+    int *sum3 = (int*)malloc((n3+1)*sizeof(int));
+
+    // Initialize sums from bottom
+    sum1[n1] = 0; 
+    for(int i = n1-1; i >= 0; i--) 
+        sum1[i] = sum1[i+1] + h1[i];
+    
+    sum2[n2] = 0;
+    for(int i = n2-1; i >= 0; i--) 
+        sum2[i] = sum2[i+1] + h2[i];
+    
+    sum3[n3] = 0;
+    for(int i = n3-1; i >= 0; i--) 
+        sum3[i] = sum3[i+1] + h3[i];
+
+    // Find maximum common sum
+    int i = 0, j = 0, k = 0;
+    while(i < n1 && j < n2 && k < n3) {
+        int s1 = sum1[i], s2 = sum2[j], s3 = sum3[k];
+        
+        if(s1 == s2 && s2 == s3) {
+            free(sum1); free(sum2); free(sum3);
+            return s1;
+        }
+        
+        // Find the maximum sum and advance the pointer with smaller sum
+        if(s1 >= s2 && s1 >= s3) {
+            // s1 is largest, try to increase s2 and s3
+            if(s2 < s1) j++;
+            if(s3 < s1) k++;
+        } else if(s2 >= s1 && s2 >= s3) {
+            // s2 is largest, try to increase s1 and s3
+            if(s1 < s2) i++;
+            if(s3 < s2) k++;
+        } else {
+            // s3 is largest, try to increase s1 and s2
+            if(s1 < s3) i++;
+            if(s2 < s3) j++;
+        }
+    }
+
+    free(sum1); free(sum2); free(sum3);
+    return 0;
+}
+
+// Alternative simpler approach using three pointers
+int maxEqualHeight2(int* h1, int n1, int* h2, int n2, int* h3, int n3) {
+    int sum1 = 0, sum2 = 0, sum3 = 0;
+    
+    // Calculate total sums
+    for(int i = 0; i < n1; i++) sum1 += h1[i];
+    for(int i = 0; i < n2; i++) sum2 += h2[i];
+    for(int i = 0; i < n3; i++) sum3 += h3[i];
+    
+    int i = 0, j = 0, k = 0;
+    
+    while(i < n1 && j < n2 && k < n3) {
+        if(sum1 == sum2 && sum2 == sum3) {
+            return sum1;
+        }
+        
+        // Remove from the stack with maximum sum
+        if(sum1 >= sum2 && sum1 >= sum3) {
+            sum1 -= h1[i++];
+        } else if(sum2 >= sum1 && sum2 >= sum3) {
+            sum2 -= h2[j++];
+        } else {
+            sum3 -= h3[k++];
+        }
+    }
+    
+    return 0;
+}
+
+int main() {
+    int n1, n2, n3;
+    scanf("%d %d %d", &n1, &n2, &n3);
+    
+    int *h1 = (int*)malloc(n1 * sizeof(int));
+    int *h2 = (int*)malloc(n2 * sizeof(int));
+    int *h3 = (int*)malloc(n3 * sizeof(int));
+    
+    for(int i = 0; i < n1; i++) scanf("%d", &h1[i]);
+    for(int i = 0; i < n2; i++) scanf("%d", &h2[i]);
+    for(int i = 0; i < n3; i++) scanf("%d", &h3[i]);
+
+    int result = maxEqualHeight2(h1, n1, h2, n2, h3, n3);
+    printf("%d\n", result);
+
+    free(h1); free(h2); free(h3);
+    return 0;
+}
