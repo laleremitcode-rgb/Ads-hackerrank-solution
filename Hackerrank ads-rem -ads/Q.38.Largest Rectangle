@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX 100000
+
+long largestRectangle(int h_count, int* h) {
+    long max_area = 0;
+    int stack[MAX];
+    int top = -1;
+    
+    int i = 0;
+    while (i < h_count) {
+        if (top == -1 || h[stack[top]] <= h[i]) {
+            stack[++top] = i++;
+        } else {
+            int height = h[stack[top--]];
+            int width = (top == -1) ? i : i - stack[top] - 1;
+            long area = (long)height * width;
+            if (area > max_area) {
+                max_area = area;
+            }
+        }
+    }
+    
+    while (top != -1) {
+        int height = h[stack[top--]];
+        int width = (top == -1) ? i : i - stack[top] - 1;
+        long area = (long)height * width;
+        if (area > max_area) {
+            max_area = area;
+        }
+    }
+    
+    return max_area;
+}
+
+// Alternative implementation with detailed comments
+long largestRectangle2(int h_count, int* h) {
+    long max_area = 0;
+    int* stack = (int*)malloc(h_count * sizeof(int));
+    int top = -1;
+    
+    for (int i = 0; i <= h_count; i++) {
+        // For the last iteration (i == h_count), we process remaining elements
+        int current_height = (i == h_count) ? 0 : h[i];
+        
+        // Pop elements from stack while current height is smaller
+        while (top != -1 && current_height < h[stack[top]]) {
+            int height = h[stack[top--]];
+            int width;
+            
+            if (top == -1) {
+                width = i;  // Stack is empty, so width is from beginning to i
+            } else {
+                width = i - stack[top] - 1;  // Width between previous smaller and current
+            }
+            
+            long area = (long)height * width;
+            if (area > max_area) {
+                max_area = area;
+            }
+        }
+        
+        // Push current index to stack
+        if (i < h_count) {
+            stack[++top] = i;
+        }
+    }
+    
+    free(stack);
+    return max_area;
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    
+    int* h = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &h[i]);
+    }
+    
+    long result = largestRectangle(n, h);
+    printf("%ld\n", result);
+    
+    free(h);
+    return 0;
+}
