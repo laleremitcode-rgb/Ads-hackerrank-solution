@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* createNode(int data) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = data;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+void swapAtDepth(Node* root, int depth, int k) {
+    if (!root) return;
+    if (depth % k == 0) {
+        Node* temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    swapAtDepth(root->left, depth + 1, k);
+    swapAtDepth(root->right, depth + 1, k);
+}
+
+void inorder(Node* root) {
+    if (!root) return;
+    inorder(root->left);
+    printf("%d ", root->data);
+    inorder(root->right);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    Node** nodes = (Node**)malloc((n + 1) * sizeof(Node*));
+    for (int i = 1; i <= n; i++) nodes[i] = createNode(i);
+
+    for (int i = 1; i <= n; i++) {
+        int l, r;
+        scanf("%d %d", &l, &r);
+        if (l != -1) nodes[i]->left = nodes[l];
+        if (r != -1) nodes[i]->right = nodes[r];
+    }
+
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        int k;
+        scanf("%d", &k);
+        swapAtDepth(nodes[1], 1, k);
+        inorder(nodes[1]);
+        printf("\n");
+    }
+    return 0;
+}
