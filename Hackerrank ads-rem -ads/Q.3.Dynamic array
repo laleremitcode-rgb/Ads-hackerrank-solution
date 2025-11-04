@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n, q;
+    scanf("%d %d", &n, &q);
+
+    // Create array of pointers (each points to a dynamic array)
+    int **arr = (int **)malloc(n * sizeof(int *));
+    int *sizes = (int *)calloc(n, sizeof(int)); // track sizes of each sub-array
+    for (int i = 0; i < n; i++)
+        arr[i] = NULL;
+
+    int lastAnswer = 0;
+
+    while (q--) {
+        int type, x, y;
+        scanf("%d %d %d", &type, &x, &y);
+
+        int idx = (x ^ lastAnswer) % n; // XOR and modulo
+
+        if (type == 1) {
+            // Append y to arr[idx]
+            sizes[idx]++;
+            arr[idx] = (int *)realloc(arr[idx], sizes[idx] * sizeof(int));
+            arr[idx][sizes[idx] - 1] = y;
+        } 
+        else if (type == 2) {
+            // Find element in arr[idx]
+            int value = arr[idx][y % sizes[idx]];
+            lastAnswer = value;
+            printf("%d\n", lastAnswer);
+        }
+    }
+
+    // Free memory
+    for (int i = 0; i < n; i++)
+        free(arr[i]);
+    free(arr);
+    free(sizes);
+
+    return 0;
+}
